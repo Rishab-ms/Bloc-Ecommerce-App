@@ -1,4 +1,7 @@
 import 'package:get_it/get_it.dart';
+import '../../presentation/cart/bloc/cart_bloc.dart';
+import '../../presentation/dashboard/dashboard_cubit.dart';
+import '../../presentation/home/bloc/home_bloc.dart' ;
 import '../network/dio_client.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../data/repositories/mock_cart_repository.dart';
@@ -84,4 +87,17 @@ void setupLocator() {
   //
   // Example:
   // sl.registerFactory(() => HomeBloc(sl<ProductRepository>()));
+    // --- Blocs ---
+  
+  // HomeBloc: We use registerFactory because we usually want a fresh Bloc 
+  // when we enter the page, and we close it when we leave.
+  sl.registerFactory(() => HomeBloc(productRepository: sl()));
+
+  // CartBloc: We use registerLazySingleton (or Singleton) because the Cart 
+  // should stay alive across the whole app. If you leave the cart page 
+  // and come back, the data should still be there.
+  sl.registerLazySingleton(() => CartBloc(cartRepository: sl()));
+  
+  // DashboardCubit: Factory is fine.
+  sl.registerFactory(() => DashboardCubit());
 }
