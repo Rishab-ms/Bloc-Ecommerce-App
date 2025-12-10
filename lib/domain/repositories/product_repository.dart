@@ -11,4 +11,7 @@ abstract class ProductRepository {
 
   // Fetches the list of category names (e.g., "smartphones", "laptops")
   Future<List<String>> fetchCategories();
+  
+  //used dedicatedly only for searching.
+  Future<List<Product>> searchProducts(String query);
 }

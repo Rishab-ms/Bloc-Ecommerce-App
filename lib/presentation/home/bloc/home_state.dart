@@ -51,9 +51,9 @@ class HomeState extends Equatable {
   // A specific helper to safely clear the category filter
   HomeState copyWithNewCategory(String? newCategory) {
     return HomeState(
-      status: this.status,
+      status: status,
       products: [], // Clear products because the list changes
-      categories: this.categories, 
+      categories: categories, 
       selectedCategory: newCategory,
       hasReachedMax: false, // Reset pagination
       page: 0, // Reset page

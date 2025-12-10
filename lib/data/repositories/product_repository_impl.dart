@@ -51,7 +51,7 @@ class ProductRepositoryImpl implements ProductRepository {
   @override
   Future<List<String>> fetchCategories() async {
     try {
-      final response = await dioClient.api.get('/products/categories');
+      final response = await dioClient.api.get('/products/category-list');
       
       // The API returns a simple list: ["beauty", "fragrances", ...]
       // We cast it to List<String>.
@@ -60,13 +60,30 @@ class ProductRepositoryImpl implements ProductRepository {
       
       // Some versions of DummyJSON return objects {slug: "abc", name: "Abc"}.
       // To be safe, let's check the type of the first item.
-      if (data.isNotEmpty && data.first is Map) {
-         return data.map((e) => e['slug'].toString()).toList();
-      }
+      // if (data.isNotEmpty && data.first is String) {
+      //    return data.map((e) => e.toString()).toList();
+      // }
 
       return List<String>.from(data);
     } catch (e) {
       throw Exception('Failed to fetch categories: $e');
+    }
+  }
+  
+
+  @override
+  Future<List<Product>> searchProducts(String query) async {
+    try {
+      // API: https://dummyjson.com/products/search?q=phone
+      final response = await dioClient.api.get(
+        '/products/search',
+        queryParameters: {'q': query},
+      );
+      
+      final List<dynamic> data = response.data['products'];
+      return data.map((json) => Product.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Search failed: $e');
     }
   }
 }

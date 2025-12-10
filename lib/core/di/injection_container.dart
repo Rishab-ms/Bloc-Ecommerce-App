@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import '../../presentation/cart/bloc/cart_bloc.dart';
 import '../../presentation/dashboard/dashboard_cubit.dart';
 import '../../presentation/home/bloc/home_bloc.dart' ;
+import '../../presentation/search/cubit/search_cubit.dart';
 import '../network/dio_client.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../data/repositories/mock_cart_repository.dart';
@@ -100,4 +101,7 @@ void setupLocator() {
   
   // DashboardCubit: Factory is fine.
   sl.registerFactory(() => DashboardCubit());
+
+    //for the search feature
+  sl.registerFactory(() => SearchCubit(productRepository: sl()));
 }
