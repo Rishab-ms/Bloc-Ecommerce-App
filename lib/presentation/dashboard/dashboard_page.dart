@@ -30,16 +30,12 @@ class _DashboardView extends StatelessWidget {
         return Scaffold(
           body: IndexedStack(
             index: currentIndex,
-            children: const [
-              HomePage(),
-              CartPage(),
-              Center(child: Text("Wishlist Page (Coming Soon)")),
-            ],
+            children: const [HomePage(), CartPage()],
           ),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: currentIndex,
             onTap: (index) {
-              // We read the Cubit to trigger a function. 
+              // We read the Cubit to trigger a function.
               // read() is used for events/methods, watch() is used for UI rebuilding.
               context.read<DashboardCubit>().changeTab(index);
             },
@@ -47,9 +43,14 @@ class _DashboardView extends StatelessWidget {
             unselectedItemColor: Colors.grey,
             showUnselectedLabels: true,
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.shopping_cart_outlined), label: 'Cart'),
-              BottomNavigationBarItem(icon: Icon(Icons.favorite_outline), label: 'Wishlist'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.shopping_cart_outlined),
+                label: 'Cart',
+              ),
             ],
           ),
         );
