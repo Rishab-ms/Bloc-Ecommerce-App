@@ -64,7 +64,10 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Shopeasy', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Shopeasy',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         centerTitle: false,
         elevation: 0,
@@ -76,25 +79,26 @@ class _HomeViewState extends State<HomeView> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-             TextField(
-  decoration: const InputDecoration(
-    hintText: 'Search for products...',
-    prefixIcon: Icon(Icons.search),
-  ),
-  readOnly: true, 
-  onTap: () {
-    showSearch(
-      context: context,
-      delegate: ProductSearchDelegate(),
-    );
-  },
-),
+                TextField(
+                  decoration: const InputDecoration(
+                    hintText: 'Search for products...',
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                  readOnly: true,
+                  onTap: () {
+                    showSearch(
+                      context: context,
+                      delegate: ProductSearchDelegate(),
+                    );
+                  },
+                ),
                 const SizedBox(height: 12),
-                
+
                 // Filter Button with Active State indication
                 BlocBuilder<HomeBloc, HomeState>(
-                  buildWhen: (previous, current) => 
-                      previous.selectedCategory != current.selectedCategory,
+                  buildWhen: (previous, current) =>
+                      previous.selectedCategory != current.selectedCategory ||
+                      previous.categories != current.categories,
                   builder: (context, state) {
                     final isFiltered = state.selectedCategory != null;
                     return Align(
@@ -102,31 +106,46 @@ class _HomeViewState extends State<HomeView> {
                       child: OutlinedButton.icon(
                         onPressed: () {
                           // Show the Bottom Sheet defined in Step 4
+                          final currentState = context.read<HomeBloc>().state;
+
                           showModalBottomSheet(
                             context: context,
+                            isScrollControlled:
+                                true, // <--- IMPORTANT: Allows the sheet to be taller
+                            backgroundColor: Colors
+                                .transparent, // Let the widget handle the radius
                             builder: (_) => CategoryBottomSheet(
-                              categories: state.categories,
-                              // We need to pass the Bloc event back to the context
+                              categories: currentState.categories,
+                              selectedCategory: currentState
+                                  .selectedCategory, // Pass current selection
                               onCategorySelected: (category) {
-                                context.read<HomeBloc>().add(HomeCategoryChanged(category));
+                                context.read<HomeBloc>().add(
+                                  HomeCategoryChanged(category),
+                                );
                               },
                             ),
                           );
                         },
                         icon: Icon(
-                          isFiltered ? Icons.filter_alt : Icons.filter_alt_outlined,
+                          isFiltered
+                              ? Icons.filter_alt
+                              : Icons.filter_alt_outlined,
                           color: isFiltered ? Colors.blue : Colors.black,
                         ),
                         label: Text(
                           state.selectedCategory ?? "Category",
                           style: TextStyle(
                             color: isFiltered ? Colors.blue : Colors.black,
-                            fontWeight: isFiltered ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isFiltered
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
                           side: BorderSide(
-                            color: isFiltered ? Colors.blue : Colors.grey.shade400,
+                            color: isFiltered
+                                ? Colors.blue
+                                : Colors.grey.shade400,
                           ),
                         ),
                       ),
@@ -142,17 +161,18 @@ class _HomeViewState extends State<HomeView> {
             child: BlocConsumer<HomeBloc, HomeState>(
               listener: (context, state) {
                 if (state.status == HomeStatus.failure) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.errorMessage)),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
                 }
               },
               builder: (context, state) {
                 if (state.status == HomeStatus.loading) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                
-                if (state.products.isEmpty && state.status == HomeStatus.success) {
+
+                if (state.products.isEmpty &&
+                    state.status == HomeStatus.success) {
                   return const Center(child: Text("No products found"));
                 }
 
@@ -172,7 +192,7 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       );
                     }
-                    
+
                     final product = state.products[index];
                     return ProductListItem(product: product);
                   },
